@@ -1,15 +1,17 @@
-import edu.princeton.cs.algs4.SET;
-import  edu.princeton.cs.algs4.ST;
+
 import  edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
-
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Hashtable;
+import java.util.Set;
 
 public class WordNet {
-    private ST<String ,Integer> SynonymID;
-    private ST<Integer,String>  keyValue;
+    private Hashtable<String ,Integer> SynonymID;
+    private Hashtable<Integer,String>  keyValue;
 
     private Digraph G;
 
@@ -26,10 +28,10 @@ public class WordNet {
 
 
         // Create a symbol table
-        SynonymID     = new ST<>();
+        SynonymID     = new Hashtable<>();
 
         // Create a set to check the nouns
-        keyValue      = new ST<>();
+        keyValue      = new Hashtable<>();
 
         // Read the synsets.txt file
         In in = new In(synsets);
@@ -52,6 +54,10 @@ public class WordNet {
         // Create a Digraph object
         G = new Digraph(synsetsSize);
 
+
+
+
+
         while (in.hasNextLine()){
             String[] arr = in.readLine().split(",");
 
@@ -64,13 +70,22 @@ public class WordNet {
 
         }
 
+
+        // Check if the Digraph is a DAG
+        DirectedCycle cycleDetector = new DirectedCycle(G);
+        if (cycleDetector.hasCycle()) {
+            throw new IllegalArgumentException("Input graph is not a Directed Acyclic Graph (DAG).");
+        }
+
     }
 
     // returns all WordNet nouns
     public Iterable<String> nouns(){
 
         List<String> list = new ArrayList<>();
-        for (Integer key: keyValue) {
+        Set<Integer> keys = keyValue.keySet();
+
+        for (Integer key: keys) {
             list.add(keyValue.get(key));
         }
         return list;
