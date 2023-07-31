@@ -19,7 +19,7 @@ public class Outcast {
             distance[i] = 0;
 
             for (int j = 0; j <  totalNouns; j++) {
-                distance[i] += wordNet.distance(curNoun,nouns[i]);
+                distance[i] += wordNet.distance(curNoun,nouns[j]);
             }
 
             if (maxDist > distance[i]){

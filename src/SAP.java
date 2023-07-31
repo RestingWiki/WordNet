@@ -1,4 +1,6 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.In;
 
 import java.util.Hashtable;
 
