@@ -152,40 +152,26 @@ public class WordNet {
         if (sca == -1)
             return null;
 
-        StringBuilder strb = new StringBuilder();
+
 
         // Create 2 BFS object for each nouns
         BreadthFirstDirectedPaths BFS_V = new BreadthFirstDirectedPaths(G,v);
-        BreadthFirstDirectedPaths BFS_W = new BreadthFirstDirectedPaths(G,w);
-
-
         Iterable<Integer> pathV  =  BFS_V.pathTo(sca);
-        Iterable<Integer> pathW = BFS_W.pathTo(sca);
         Stack<Integer> stack = new Stack<>();
 
 
-
-        for (Integer vertex: pathW) {
+        // Find the path to the sca
+        for (Integer vertex: pathV) {
             stack.push(vertex);
         }
-        stack.pop();    // Pop the duplicate sca
 
-
-        // Create a list to store the path
-        List<Integer> path = new ArrayList<>();
-        for (Integer vertex: pathV) {
-            path.add(vertex);
-        }
-
-        while (!stack.isEmpty()){
-            path.add(stack.pop());
-        }
-
-        for (Integer vertex: path){
-            if (strb.length() == 0)
-                strb.append(keyValue.get(vertex));
+        StringBuilder strb =new StringBuilder();
+        HashSet<String> nouns= keyValue.get(stack.pop());
+        for (String noun: nouns) {
+            if (strb.isEmpty())
+                strb.append(noun);
             else
-                strb.append("-").append(keyValue.get(vertex));
+                strb.append(" ").append(noun);
         }
 
 
