@@ -12,7 +12,7 @@ public class Outcast {
         int[] distance = new int[totalNouns];
 
         // distnace
-        int maxDist = Integer.MAX_VALUE;
+        int maxDist = Integer.MIN_VALUE;
         int outcastID = 0;
         for (int i = 0; i <totalNouns ; i++) {
             String curNoun = nouns[i];
@@ -22,7 +22,7 @@ public class Outcast {
                 distance[i] += wordNet.distance(curNoun,nouns[j]);
             }
 
-            if (maxDist > distance[i]){
+            if (maxDist < distance[i]){
                 maxDist = distance[i];
                 outcastID = i;
             }

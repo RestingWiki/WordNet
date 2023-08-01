@@ -1,17 +1,18 @@
 
-import  edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Hashtable;
-import java.util.Set;
+import  java.util.Hashtable;
+import  java.util.HashSet;
+import  java.util.Arrays;
+import  java.util.List;
+import  java.util.ArrayList;
 
 public class WordNet {
     private Hashtable<String ,Integer> SynonymID;
-    private Hashtable<Integer,String>  keyValue;
+    private Hashtable<Integer,HashSet<String>>  keyValue;
 
     private Digraph G;
 
@@ -41,9 +42,15 @@ public class WordNet {
 
             // Create a key-value pair
             int id = Integer.parseInt(arr[0]);
-            SynonymID.put(arr[1], id);
-            keyValue.put(id, arr[1]);
 
+            // Put the noun in a set
+            String[] nouns = arr[1].split(" ");
+            HashSet<String> set = new HashSet<>(Arrays.asList(nouns));
+
+            keyValue.put(id, set);
+            for (String noun: set){
+                SynonymID.put(noun,id);
+            }
             synsetsSize++;
         }
 
@@ -82,38 +89,38 @@ public class WordNet {
     // returns all WordNet nouns
     public Iterable<String> nouns(){
 
-        List<String> list = new ArrayList<>();
-        Set<Integer> keys = keyValue.keySet();
 
-        for (Integer key: keys) {
-            list.add(keyValue.get(key));
-        }
-        return list;
+        return SynonymID.keySet();
     }
 
     // is the word a WordNet noun?
     public boolean isNoun(String word){
+
         // Check invalid argument
         if (word == null){
-            throw  new IllegalArgumentException("");
+            throw  new IllegalArgumentException("This is not a noun in the WordNet!");
         }
 
 
-        return SynonymID.get(word) != null;
+        return SynonymID.containsKey(word);
     }
 
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB){
         // Check invalid argument
         if (nounA == null || nounB == null){
-            throw  new IllegalArgumentException("");
+            throw  new IllegalArgumentException("noun is Null");
         }
 
+
         if (!isNoun(nounA) || !isNoun(nounB))
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException("Noun is not in synset");
+
+
 
 
         //  Retrieve the vertex (id) for the corresponding noun
+        //System.out.println(SynonymID.size());
         int v = SynonymID.get(nounA);
         int w = SynonymID.get(nounB);
         SAP sap = new SAP(G);
@@ -129,8 +136,10 @@ public class WordNet {
             throw  new IllegalArgumentException("");
         }
 
+
         if (!isNoun(nounA) || !isNoun(nounB))
             throw new IllegalArgumentException("");
+
 
         //  Retrieve the vertex (id) for the corresponding noun
         int v = SynonymID.get(nounA);
@@ -145,11 +154,12 @@ public class WordNet {
 
         StringBuilder strb = new StringBuilder();
 
+        // Create 2 BFS object for each nouns
         BreadthFirstDirectedPaths BFS_V = new BreadthFirstDirectedPaths(G,v);
         BreadthFirstDirectedPaths BFS_W = new BreadthFirstDirectedPaths(G,w);
 
 
-        List<Integer> path  = (List<Integer>) BFS_V.pathTo(sca);
+        Iterable<Integer> pathV  =  BFS_V.pathTo(sca);
         Iterable<Integer> pathW = BFS_W.pathTo(sca);
         Stack<Integer> stack = new Stack<>();
 
@@ -159,6 +169,13 @@ public class WordNet {
             stack.push(vertex);
         }
         stack.pop();    // Pop the duplicate sca
+
+
+        // Create a list to store the path
+        List<Integer> path = new ArrayList<>();
+        for (Integer vertex: pathV) {
+            path.add(vertex);
+        }
 
         while (!stack.isEmpty()){
             path.add(stack.pop());
