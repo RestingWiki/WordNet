@@ -40,18 +40,8 @@ public class SAP {
         int sca = -1;
         dist = Integer.MAX_VALUE;
 
-        BreadthFirstDirectedPaths BFS_V = new BreadthFirstDirectedPaths(G,v);
-        BreadthFirstDirectedPaths BFS_W = new BreadthFirstDirectedPaths(G,w);
-
-        for (int i = 0; i < G.V(); i++) {
-            if (BFS_V.hasPathTo(i) && BFS_W.hasPathTo(i)){
-                int tempDist = BFS_V.distTo(i) + BFS_W.distTo(i);       // Calculate new dist
-                if (tempDist < dist) {
-                    sca  = i;
-                    dist = tempDist;
-                }
-            }
-        }
+        DeluxeBFS bfs = new DeluxeBFS(G);
+        sca =bfs.ancestor_BFS(v,w);
 
         return  sca;        // Return the shortest common ancestor
     }
@@ -91,77 +81,19 @@ public class SAP {
             throw new IllegalArgumentException("");
 
 
-        // Symbol table  for each BFS
-        HashMap<Integer,BreadthFirstDirectedPaths> st = new HashMap<>();
-
-
         for (Integer vertex: v) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
-            //System.out.println(vertex);
-            st.put(vertex,new BreadthFirstDirectedPaths(G,vertex));
         }
 
         for (Integer vertex: w) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
-            //System.out.println(vertex);
-            st.put(vertex,new BreadthFirstDirectedPaths(G,vertex));
         }
 
         int sca = -1;
-        dist = Integer.MAX_VALUE;
-
-        for (int i = 0; i < G.V(); i++){
-            boolean reachable = false;
-            int tempDist_V = Integer.MAX_VALUE;
-            int tempDist_W = Integer.MAX_VALUE;
-            //System.out.println("Vertext " + i);
-            // Check the first set of vertices
-            for (Integer key: v) {
-                 BreadthFirstDirectedPaths bfs = st.get(key);
-                 if (bfs.hasPathTo(i))
-                 {
-                     //System.out.println("Potential: " + i);
-                     //System.out.println("Before checking: " + tempDist_V);
-                     if (tempDist_V == Integer.MAX_VALUE)
-                         tempDist_V = bfs.distTo(i);      // Initial path
-                     else if (tempDist_V > bfs.distTo(i))
-                         tempDist_V = bfs.distTo(i);      // Shorter path
-                     //System.out.println("After checking: " + tempDist_V);
-
-                     reachable = true;
-                 }
-            }
-
-            // Check the second set of vertices
-            if (reachable) {
-                //System.out.println("Continue!");
-                for (Integer key : w) {
-                    BreadthFirstDirectedPaths bfs = st.get(key);
-                    if (bfs.hasPathTo(i))
-                    {
-                       // System.out.println("Vertex: " + i + " has a path to w!");
-                       // System.out.println("distance to V: " + tempDist_V);
-                        if (tempDist_W == Integer.MAX_VALUE)
-                            tempDist_W = bfs.distTo(i);      // Initial path
-                        else if (tempDist_W > bfs.distTo(i))
-                            tempDist_W = bfs.distTo(i);      // Shorter path
 
 
-                        // Update sca and dist
-                        if (dist > tempDist_W + tempDist_V){
-                            dist = tempDist_V + tempDist_W;
-                           // System.out.println("New dist: " + dist);
-                            sca = i;
-                        }
-
-                    }
-                }
-            }
-
-
-        }
 
 
         return  sca;
