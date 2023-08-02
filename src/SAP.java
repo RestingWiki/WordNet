@@ -2,11 +2,12 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.In;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class SAP {
     private final Digraph G;
     private int dist;
+    //private HashMap<Integer,BreadthFirstDirectedPaths> st;
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(edu.princeton.cs.algs4.Digraph G){
         if (G == null)
@@ -51,7 +52,7 @@ public class SAP {
                 }
             }
         }
-        
+
         return  sca;        // Return the shortest common ancestor
     }
 
@@ -91,7 +92,7 @@ public class SAP {
 
 
         // Symbol table  for each BFS
-        Hashtable<Integer,BreadthFirstDirectedPaths> st = new Hashtable<>();
+        HashMap<Integer,BreadthFirstDirectedPaths> st = new HashMap<>();
 
 
         for (Integer vertex: v) {

@@ -4,19 +4,18 @@ import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 
-import  java.util.Hashtable;
-import  java.util.HashSet;
-import  java.util.Arrays;
-import  java.util.List;
-import  java.util.Objects;
-import  java.util.ArrayList;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.HashSet;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 public class WordNet {
-    private Hashtable<String ,List<Integer>> SynonymID;
-    private Hashtable<Integer,HashSet<String>>  keyValue;
+    private HashMap<String ,List<Integer>> SynonymID;
+    private HashMap<Integer,HashSet<String>> keyValue;
 
     private Digraph G;
+    private SAP sap;
 
 
     // constructor takes the name of the two input files
@@ -31,10 +30,10 @@ public class WordNet {
 
 
         // Create a symbol table
-        SynonymID     = new Hashtable<>();
+        SynonymID     = new HashMap<>();
 
         // Create a set to check the nouns
-        keyValue      = new Hashtable<>();
+        keyValue      = new HashMap<>();
 
         // Read the synsets.txt file
         In in = new In(synsets);
@@ -99,6 +98,7 @@ public class WordNet {
             }
         }
 
+        sap = new SAP(G);
     }
 
     // returns all WordNet nouns
@@ -146,7 +146,7 @@ public class WordNet {
 
          */
         List<Integer> w= SynonymID.get(nounB);
-        SAP sap = new SAP(G);
+
         //System.out.println(v);
         //System.out.println(w);
 
@@ -171,9 +171,7 @@ public class WordNet {
         List<Integer> w = SynonymID.get(nounB);
 
         // Find the sca
-        SAP sap = new SAP(G);
         int sca = sap.ancestor(v,w);
-
         if (sca == -1)
             return null;
 
