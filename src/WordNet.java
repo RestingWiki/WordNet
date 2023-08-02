@@ -8,10 +8,12 @@ import  java.util.Hashtable;
 import  java.util.HashSet;
 import  java.util.Arrays;
 import  java.util.List;
+import  java.util.Objects;
 import  java.util.ArrayList;
 
+
 public class WordNet {
-    private Hashtable<String ,Integer> SynonymID;
+    private Hashtable<String ,List<Integer>> SynonymID;
     private Hashtable<Integer,HashSet<String>>  keyValue;
 
     private Digraph G;
@@ -48,8 +50,10 @@ public class WordNet {
             HashSet<String> set = new HashSet<>(Arrays.asList(nouns));
 
             keyValue.put(id, set);
-            for (String noun: set){
-                SynonymID.put(noun,id);
+            for (String noun : set) {
+                List<Integer> synsetIds = SynonymID.getOrDefault(noun, new ArrayList<>());
+                synsetIds.add(id);
+                SynonymID.put(noun, synsetIds);
             }
             synsetsSize++;
         }
@@ -82,6 +86,17 @@ public class WordNet {
         DirectedCycle cycleDetector = new DirectedCycle(G);
         if (cycleDetector.hasCycle()) {
             throw new IllegalArgumentException("Input graph is not a Directed Acyclic Graph (DAG).");
+        }
+
+        // Check if the Digraph has multiple roots (vertices with no incoming edges)
+        int rootCount = 0;
+        for (int v = 0; v < G.V(); v++) {
+            if (!G.adj(v).iterator().hasNext()) {
+                rootCount++;
+                if (rootCount > 1) {
+                    throw new IllegalArgumentException("Input graph has multiple roots.");
+                }
+            }
         }
 
     }
@@ -121,9 +136,19 @@ public class WordNet {
 
         //  Retrieve the vertex (id) for the corresponding noun
         //System.out.println(SynonymID.size());
-        int v = SynonymID.get(nounA);
-        int w = SynonymID.get(nounB);
+
+        List<Integer> v = SynonymID.get(nounA);
+        /*
+        for (String key: SynonymID.keySet()) {
+            if (Objects.equals(key, nounA))
+                System.out.println(key);
+        }
+
+         */
+        List<Integer> w= SynonymID.get(nounB);
         SAP sap = new SAP(G);
+        //System.out.println(v);
+        //System.out.println(w);
 
         return  sap.length(v,w);
     }
@@ -142,8 +167,8 @@ public class WordNet {
 
 
         //  Retrieve the vertex (id) for the corresponding noun
-        int v = SynonymID.get(nounA);
-        int w = SynonymID.get(nounB);
+        List<Integer> v = SynonymID.get(nounA);
+        List<Integer> w = SynonymID.get(nounB);
 
         // Find the sca
         SAP sap = new SAP(G);
@@ -165,17 +190,17 @@ public class WordNet {
             stack.push(vertex);
         }
 
-        StringBuilder strb =new StringBuilder();
+        StringBuilder str =new StringBuilder();
         HashSet<String> nouns= keyValue.get(stack.pop());
         for (String noun: nouns) {
-            if (strb.isEmpty())
-                strb.append(noun);
+            if (str.length() == 0)
+                str.append(noun);
             else
-                strb.append(" ").append(noun);
+                str.append(" ").append(noun);
         }
 
 
-        return strb.toString();
+        return str.toString();
     }
 
 
@@ -183,6 +208,9 @@ public class WordNet {
 
     // do unit testing of this class
     public static void main(String[] args){
+        WordNet wordNet = new WordNet("synsets.txt","hyper.txt");
 
+        //System.out.println(wordNet.sap("entity","thing"));
+        System.out.println(wordNet.distance("thing","entity"));
     }
 }
