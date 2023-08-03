@@ -5,13 +5,14 @@ import edu.princeton.cs.algs4.SET;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
 
 public class DeluxeBFS {
     private final Digraph G;
     private int[] distToV;
     private int[] distToW;
-    private Set<Integer> markedV;
-    private Set<Integer> markedW;
+    private HashSet<Integer> markedV;
+    private HashSet<Integer> markedW;
     private ArrayDeque<Integer> queueV;
     private ArrayDeque<Integer> queueW;
     private int commonAncestor;

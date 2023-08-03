@@ -3,127 +3,169 @@ import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.In;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class SAP {
     private final Digraph G;
-    private int dist;
-    //private HashMap<Integer,BreadthFirstDirectedPaths> st;
-    // constructor takes a digraph (not necessarily a DAG)
-    public SAP(edu.princeton.cs.algs4.Digraph G){
-        if (G == null)
-            throw  new IllegalArgumentException("");
+    private final HashMap<String, Integer> cacheLength;
+    private final HashMap<String,Integer> cacheAncestor;
 
-        this.G  = new Digraph(G);
+    // constructor takes a digraph (not necessarily a DAG)
+    public SAP(Digraph G) {
+        if (G == null)
+            throw new IllegalArgumentException("");
+
+        this.G = new Digraph(G);
+        this.cacheLength = new HashMap<>();
+        this.cacheAncestor = new HashMap<>();
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
-    public int length(int v, int w){
+    public int length(int v, int w) {
         validateVertex(v);
         validateVertex(w);
 
+        String key1 = v + "-" + w;
+        String key2 = w + "-" + v;
+        if (cacheLength.containsKey(key1)) {
+            return cacheLength.get(key1);
+        }
 
-        // CHeck for common ancestor
+        if (cacheLength.containsKey(key2)){
+            return  cacheLength.get(key2);
+        }
+
         DeluxeBFS bfs = new DeluxeBFS(G);
-
-
-        return  bfs.length(v,w);
+        int result = bfs.length(v, w);
+        cacheLength.put(key1, result);
+        cacheLength.put(key2,result);
+        return result;
     }
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
-    public int ancestor(int v, int w){
-        // Check for null
+    public int ancestor(int v, int w) {
         validateVertex(v);
         validateVertex(w);
 
-        //int sca = -1;
-        dist = Integer.MAX_VALUE;
+        String key1 = v + "-" + w;
+        String key2 = w + "-" + v;
+        if (cacheAncestor.containsKey(key1)) {
+            return cacheAncestor.get(key1);
+        }
+
+        if (cacheAncestor.containsKey(key2)){
+            return  cacheAncestor.get(key2);
+        }
 
         DeluxeBFS bfs = new DeluxeBFS(G);
-
-
-        return  bfs.ancestor(v,w);      // Return the shortest common ancestor
+        int result = bfs.ancestor(v, w);
+        cacheAncestor.put(key1, result);
+        cacheAncestor.put(key2, result);
+        return result;
     }
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
-    public int length(Iterable<Integer> v, Iterable<Integer> w){
-        // Check for null
+    public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("");
 
-        // Check for empty inputs
         if (!v.iterator().hasNext() || !w.iterator().hasNext())
             return -1;
 
-        for (Integer vertex: v) {
+        for (Integer vertex : v) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
             validateVertex(vertex);
         }
 
-        for (Integer vertex: w) {
+        for (Integer vertex : w) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
             validateVertex(vertex);
+        }
+
+        String token1 = createKey(v);
+        String token2 = createKey(w);
+        String key1 = token1.concat(token2);
+        String key2 = token2.concat(token1);
+
+
+        if (cacheLength.containsKey(key1)) {
+            return cacheLength.get(key1);
+        }
+        if (cacheLength.containsKey(key2)) {
+            return cacheLength.get(key2);
         }
 
         DeluxeBFS bfs = new DeluxeBFS(G);
-
-        return bfs.length(v,w);
-
+        int result = bfs.length(v, w);
+        cacheLength.put(key1, result);
+        cacheLength.put(key2, result);
+        return result;
     }
 
     // a common ancestor that participates in shortest ancestral path; -1 if no such path
-    public int ancestor(Iterable<Integer> v, Iterable<Integer> w){
-        // Check for null
+    public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("");
 
         if (!v.iterator().hasNext() || !w.iterator().hasNext())
             return -1;
 
-        for (Integer vertex: v) {
+        for (Integer vertex : v) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
             validateVertex(vertex);
         }
 
-        for (Integer vertex: w) {
+        for (Integer vertex : w) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
             validateVertex(vertex);
+        }
+
+        String token1 = createKey(v);
+        String token2 = createKey(w);
+        String key1 = token1.concat(token2);
+        String key2 = token2.concat(token1);
+
+
+        if (cacheAncestor.containsKey(key1)) {
+            return cacheAncestor.get(key1);
+        }
+        if (cacheAncestor.containsKey(key2)) {
+            return cacheAncestor.get(key2);
         }
 
         DeluxeBFS bfs = new DeluxeBFS(G);
-
-
-
-        return  bfs.ancestor(v,w);
+        int result = bfs.ancestor(v, w);
+        cacheAncestor.put(key1, result);
+        cacheAncestor.put(key2, result);
+        return result;
     }
 
-
-
-
-    private void validateVertex(int v){
+    private void validateVertex(int v) {
         if (v < 0 || v >= G.V())
             throw new IllegalArgumentException("Vertex out of range!");
     }
-
-
+    private String createKey(Iterable<Integer> iterable) {
+        StringBuilder sb = new StringBuilder();
+        Iterator<Integer> iterator = iterable.iterator();
+        while (iterator.hasNext()) {
+            Integer value = iterator.next();
+            sb.append(value);
+            if (iterator.hasNext()) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
+    }
     // do unit testing of this class
     public static void main(String[] args) {
         In in = new In("input.txt");
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
-        /*
-        while (!StdIn.isEmpty()) {
-            int v = StdIn.readInt();
-            int w = StdIn.readInt();
-            int length   = sap.length(v, w);
-            int ancestor = sap.ancestor(v, w);
-            StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
-        }
 
-         */
         SET<Integer> set1 = new SET<>();
         set1.add(10);
         set1.add(11);
@@ -137,8 +179,6 @@ public class SAP {
         set2.add(1);
         set2.add(0);
 
-        //System.out.println(sap.ancestor(10,7));
-       // System.out.println(sap.length(10,7));
-        System.out.println(sap.ancestor(set1,set2));
+        System.out.println(sap.ancestor(set1, set2));
     }
 }
