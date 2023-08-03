@@ -23,12 +23,10 @@ public class SAP {
 
 
         // CHeck for common ancestor
-        int sca = ancestor(v,w);
-        if (sca == -1)
-            return -1;
+        DeluxeBFS bfs = new DeluxeBFS(G);
 
 
-        return  dist;
+        return  bfs.length(v,w);
     }
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
@@ -37,13 +35,13 @@ public class SAP {
         validateVertex(v);
         validateVertex(w);
 
-        int sca = -1;
+        //int sca = -1;
         dist = Integer.MAX_VALUE;
 
         DeluxeBFS bfs = new DeluxeBFS(G);
-        sca =bfs.ancestor_BFS(v,w);
 
-        return  sca;        // Return the shortest common ancestor
+
+        return  bfs.ancestor(v,w);      // Return the shortest common ancestor
     }
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
@@ -52,25 +50,25 @@ public class SAP {
         if (v == null || w == null)
             throw new IllegalArgumentException("");
 
+        // Check for empty inputs
+        if (!v.iterator().hasNext() || !w.iterator().hasNext())
+            return -1;
 
         for (Integer vertex: v) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
+            validateVertex(vertex);
         }
 
         for (Integer vertex: w) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
+            validateVertex(vertex);
         }
 
-        int sca = -1;
-        sca = ancestor(v,w);
+        DeluxeBFS bfs = new DeluxeBFS(G);
 
-        if (sca == -1)
-            return  sca;
-
-
-        return dist;
+        return bfs.length(v,w);
 
     }
 
@@ -80,23 +78,26 @@ public class SAP {
         if (v == null || w == null)
             throw new IllegalArgumentException("");
 
+        if (!v.iterator().hasNext() || !w.iterator().hasNext())
+            return -1;
 
         for (Integer vertex: v) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
+            validateVertex(vertex);
         }
 
         for (Integer vertex: w) {
             if (vertex == null)
                 throw new IllegalArgumentException("Iterable contains null value!");
+            validateVertex(vertex);
         }
 
-        int sca = -1;
+        DeluxeBFS bfs = new DeluxeBFS(G);
 
 
 
-
-        return  sca;
+        return  bfs.ancestor(v,w);
     }
 
 
@@ -124,12 +125,20 @@ public class SAP {
 
          */
         SET<Integer> set1 = new SET<>();
-        set1.add(9);
+        set1.add(10);
+        set1.add(11);
+        set1.add(5);
+        set1.add(3);
         set1.add(1);
+
+        set1.add(0);
         SET<Integer> set2 = new SET<>();
-        set2.add(3);
+        set2.add(6);
+        set2.add(1);
+        set2.add(0);
 
-
+        //System.out.println(sap.ancestor(10,7));
+       // System.out.println(sap.length(10,7));
         System.out.println(sap.ancestor(set1,set2));
     }
 }

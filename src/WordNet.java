@@ -177,27 +177,17 @@ public class WordNet {
 
 
 
-        // Create 2 BFS object for each nouns
-        BreadthFirstDirectedPaths BFS_V = new BreadthFirstDirectedPaths(G,v);
-        Iterable<Integer> pathV  =  BFS_V.pathTo(sca);
-        Stack<Integer> stack = new Stack<>();
-
-
-        // Find the path to the sca
-        for (Integer vertex: pathV) {
-            stack.push(vertex);
-        }
-
+        // String builder
         StringBuilder str =new StringBuilder();
-        HashSet<String> nouns= keyValue.get(stack.pop());
-        for (String noun: nouns) {
+
+        HashSet<String> tokens = keyValue.get(sca);
+        for (String token: tokens) {
             if (str.length() == 0)
-                str.append(noun);
+                str.append(token);
             else
-                str.append(" ").append(noun);
+                str.append(" ").append(token);
+
         }
-
-
         return str.toString();
     }
 
@@ -210,5 +200,6 @@ public class WordNet {
 
         //System.out.println(wordNet.sap("entity","thing"));
         System.out.println(wordNet.distance("thing","entity"));
+        System.out.println(wordNet.sap("thing","entity"));
     }
 }
